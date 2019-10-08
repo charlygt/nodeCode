@@ -4,7 +4,10 @@ const SportScheme = require('../models/Spot');
 module.exports = {
 
   async index(req, res) {
+   const {tech} = req.query; 
+   const spots = await SportScheme.find({techs:tech});
 
+   return res.json(spots);
   },
   
   async store(req, res) {
