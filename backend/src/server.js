@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const routes = require('./routes');
+const path = require('path');
 
 const app = express();
 
@@ -19,7 +21,10 @@ mongoose.connect('mongodb+srv://omnistack:Ab080816@cursonode-ggwvw.mongodb.net/t
 //req.body = Acessar corpo da requisição (post)
 
 //informando que pode aceitar json
+app.use(cors());
 app.use(express.json());
+// ativa o uso de arquivos staticos, como pdf e imagens ect;
+app.use('/files',express.static(path.resolve(__dirname,'..','uploads')));
 app.use(routes);
 
 app.listen(3333);
