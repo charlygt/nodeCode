@@ -3,14 +3,35 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const routes = require('./routes');
 const path = require('path');
+const socketio =  require('socket.io');
+const http = require('http');
+
 
 const app = express();
+const server  = http.Server(app);
+const io = socketio(server);
+
+const connectedUsers = {};
+
+io.on('connection', socket =>{
+     const {user_id} =  socket.handshake.query;
+     connectedUsers[user_id] = socket.id;
+})
 
 //cuidado com o parametro do nome do banco
 // contectando com banco mongo
 mongoose.connect('mongodb+srv://omnistack:Ab080816@cursonode-ggwvw.mongodb.net/teste?retryWrites=true&w=majority',{
     useNewUrlParser:true,
     useUnifiedTopology:true,
+});
+
+
+// chamado de mid
+app.use( (req,res,next) =>{
+    req.io = io;
+    req.connectedUsers = connectedUsers;
+
+    return next();
 });
 
 //req => o valor que é enviado pelo usuário
@@ -27,4 +48,4 @@ app.use(express.json());
 app.use('/files',express.static(path.resolve(__dirname,'..','uploads')));
 app.use(routes);
 
-app.listen(3333);
+server.listen(3333);
